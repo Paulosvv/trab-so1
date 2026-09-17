@@ -1,0 +1,101 @@
+TRABALHO DE DESENVOLVIMENTO - SISTEMAS OPERACIONAIS
+IFRS Campus Restinga - ADS 3N - 2026/2
+Prof. Jean Carlo Hamerski
+
+Aluno: Paulo
+Repositorio: https://github.com/Paulosvv/trab-so1
+Tag da versao entregue: v1.0
+Linguagem: Python 3
+
+
+1. COMO EXECUTAR O PROGRAMA
+---------------------------
+Requisito: Python 3 instalado.
+
+No terminal, dentro da pasta do projeto:
+
+    python base.py
+
+(em alguns sistemas o comando e' "python3 base.py")
+
+Ao iniciar, o programa pergunta como popular a lista de processos:
+
+    Sera aleatorio?:
+
+  - digite 1 para gerar os atributos aleatoriamente
+  - digite 0 para digitar os atributos pelo teclado
+
+No modo manual sao pedidos, para cada processo e nesta ordem:
+tempo de execucao, tempo de chegada e prioridade.
+
+Em seguida e' exibido o menu:
+
+    1 = FCFS
+    2 = SJF Preemptivo
+    3 = SJF Nao Preemptivo
+    4 = Prioridade Preemptivo
+    5 = Prioridade Nao Preemptivo
+    6 = Round-Robin
+    7 = Imprime a lista de processos
+    8 = Popula a lista de processos novamente
+    9 = Sair
+
+A mesma lista de processos pode ser usada por todos os algoritmos, bastando
+escolher uma opcao apos a outra - o que permite comparar o tempo medio de
+espera de cada politica de escalonamento sobre a mesma entrada.
+A opcao 8 reatribui a lista sem precisar reiniciar o programa.
+
+Para cada algoritmo executado o programa imprime:
+  - o historico de execucao (qual processo executou em cada instante de tempo);
+  - o tempo de espera de cada processo;
+  - o tempo medio de espera.
+
+
+2. CONFIGURACAO
+---------------
+No topo do arquivo base.py:
+
+    n_processos = 3    quantidade de processos da lista
+    QUANTUM = 2        fatia de tempo usada pelo Round-Robin
+
+Para executar com uma quantidade diferente de processos, altere n_processos
+antes de rodar o programa.
+
+
+3. CONVENCOES ADOTADAS
+----------------------
+  - Prioridade: menor numero = prioridade mais alta.
+  - Tempo de chegada: utilizado pelo SJF e pelo Prioridade. O FCFS e o
+    Round-Robin nao o utilizam, conforme o enunciado do trabalho.
+  - Tempo de espera: soma dos instantes em que o processo ja' chegou, ainda
+    nao terminou e nao esta ocupando a CPU.
+
+
+4. DECLARACAO DE USO DE INTELIGENCIA ARTIFICIAL GENERATIVA
+----------------------------------------------------------
+Conforme a secao 6 do enunciado:
+
+IA utilizada: Claude (Anthropic).
+
+Onde foi usada no codigo:
+  - funcao SJF()                 - logica do SJF preemptivo e nao preemptivo
+  - funcao PRIORIDADE()          - logica do Prioridade preemptivo e nao preemptivo
+  - funcao Round_Robin()         - logica do Round-Robin com quantum
+  - funcao soma_restante()       - auxiliar, criterio de termino da simulacao
+  - funcao contabiliza_espera()  - auxiliar, contagem do tempo de espera
+  - funcao menor_tempo_restante()- auxiliar, criterio de escolha do SJF
+  - funcao maior_prioridade()    - auxiliar, criterio de escolha do Prioridade
+  - funcao proximo_processo()    - auxiliar, fila circular do Round-Robin
+  - constante QUANTUM
+
+Todos esses trechos estao marcados no codigo com o comentario "[IA]".
+
+Para que fim: escrever a logica de decisao de escalonamento de cada algoritmo,
+seguindo o modelo do FCFS ja' fornecido no codigo-base da disciplina.
+
+O restante do arquivo (main, popular_processos, imprime_processos,
+imprime_stats e FCFS) e' o codigo-base fornecido pelo professor, mantido sem
+alteracoes.
+
+Todo o codigo foi revisado e compreendido pelo aluno, que tem dominio do seu
+funcionamento.

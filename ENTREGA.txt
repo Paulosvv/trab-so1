@@ -2,9 +2,10 @@ TRABALHO DE DESENVOLVIMENTO - SISTEMAS OPERACIONAIS
 IFRS Campus Restinga - ADS 3N - 2026/2
 Prof. Jean Carlo Hamerski
 
-Aluno: Paulo
+Aluno: Paulo (Paulosvv)
 Repositorio: https://github.com/Paulosvv/trab-so1
 Tag da versao entregue: v1.0
+Algoritmo desta entrega: FCFS (Entrega 1, peso 1/6)
 Linguagem: Python 3
 
 
@@ -22,7 +23,7 @@ Ao iniciar, o programa pergunta como popular a lista de processos:
 
     Sera aleatorio?:
 
-  - digite 1 para gerar os atributos aleatoriamente
+  - digite 1 para sortear os atributos aleatoriamente (random.randint)
   - digite 0 para digitar os atributos pelo teclado
 
 No modo manual sao pedidos, para cada processo e nesta ordem:
@@ -30,72 +31,99 @@ tempo de execucao, tempo de chegada e prioridade.
 
 Em seguida e' exibido o menu:
 
-    1 = FCFS
-    2 = SJF Preemptivo
-    3 = SJF Nao Preemptivo
-    4 = Prioridade Preemptivo
-    5 = Prioridade Nao Preemptivo
-    6 = Round-Robin
+    1 = FCFS                        <- implementado nesta entrega
+    2 = SJF Preemptivo              (entrega 2)
+    3 = SJF Nao Preemptivo          (entrega 2)
+    4 = Prioridade Preemptivo       (entrega 3)
+    5 = Prioridade Nao Preemptivo   (entrega 3)
+    6 = Round-Robin                 (entrega 4)
     7 = Imprime a lista de processos
     8 = Popula a lista de processos novamente
     9 = Sair
 
-A mesma lista de processos pode ser usada por todos os algoritmos, bastando
-escolher uma opcao apos a outra - o que permite comparar o tempo medio de
-espera de cada politica de escalonamento sobre a mesma entrada.
-A opcao 8 reatribui a lista sem precisar reiniciar o programa.
+As opcoes 2 a 6 existem no menu porque fazem parte do codigo-base, mas suas
+funcoes ainda sao os esqueletos originais: serao implementadas nas entregas
+seguintes.
 
-Para cada algoritmo executado o programa imprime:
-  - o historico de execucao (qual processo executou em cada instante de tempo);
+A opcao 8 reatribui a lista de processos sem precisar reiniciar o programa,
+e a mesma lista pode ser reutilizada por todos os algoritmos - cada funcao
+copia as listas com list() antes de simular, sem destruir a entrada. E' o que
+permitira comparar o tempo medio de espera entre as politicas nas proximas
+entregas.
+
+
+2. O QUE O PROGRAMA IMPRIME
+---------------------------
+Para cada execucao do FCFS:
+
+  - o historico de execucao: uma linha por instante de tempo, no formato
+    tempo[i]: processo[p] restante=r
   - o tempo de espera de cada processo;
-  - o tempo medio de espera.
+  - o tempo medio de espera (soma das esperas dividida por n_processos).
+
+Exemplo, com tempos de execucao 3, 2 e 4:
+
+    tempo[1]: processo[0] restante=3
+    tempo[2]: processo[0] restante=2
+    tempo[3]: processo[0] restante=1
+    tempo[4]: processo[1] restante=2
+    tempo[5]: processo[1] restante=1
+    tempo[6]: processo[2] restante=4
+    tempo[7]: processo[2] restante=3
+    tempo[8]: processo[2] restante=2
+    tempo[9]: processo[2] restante=1
+    Processo[0]: tempo_espera=0
+    Processo[1]: tempo_espera=3
+    Processo[2]: tempo_espera=5
+    Tempo medio de espera: 2.6666666666666665
+
+Como o FCFS atende na ordem de chegada da lista, a espera de cada processo e'
+a soma dos tempos de execucao dos processos anteriores: 0, 3 e 3+2=5.
 
 
-2. CONFIGURACAO
+3. CONFIGURACAO
 ---------------
 No topo do arquivo base.py:
 
-    n_processos = 3    quantidade de processos da lista
-    QUANTUM = 2        fatia de tempo usada pelo Round-Robin
+    n_processos = 3              quantidade de processos da lista
+    MAXIMO_TEMPO_EXECUCAO        limite do laco de simulacao
 
-Para executar com uma quantidade diferente de processos, altere n_processos
-antes de rodar o programa.
+Para executar com outra quantidade de processos, altere n_processos e rode
+o programa novamente.
 
 
-3. CONVENCOES ADOTADAS
+4. CONVENCOES ADOTADAS
 ----------------------
-  - Prioridade: menor numero = prioridade mais alta.
-  - Tempo de chegada: utilizado pelo SJF e pelo Prioridade. O FCFS e o
-    Round-Robin nao o utilizam, conforme o enunciado do trabalho.
-  - Tempo de espera: soma dos instantes em que o processo ja' chegou, ainda
-    nao terminou e nao esta ocupando a CPU.
+  - Os processos sao representados por listas paralelas indexadas pelo numero
+    do processo: tempo_execucao, tempo_chegada, prioridade, tempo_restante e
+    tempo_espera.
+  - O FCFS nao utiliza o tempo de chegada, conforme o enunciado do trabalho;
+    o atributo e' lido e guardado para uso do SJF e do Prioridade.
+  - A decisao de escalonamento do FCFS esta na funcao FCFS(), no trecho em que
+    o processo atual chega ao ultimo instante (tempo_restante == 1) e a CPU
+    passa para processo_em_execucao + 1, sem preempcao.
 
 
-4. DECLARACAO DE USO DE INTELIGENCIA ARTIFICIAL GENERATIVA
+5. DECLARACAO DE USO DE INTELIGENCIA ARTIFICIAL GENERATIVA
 ----------------------------------------------------------
 Conforme a secao 6 do enunciado:
 
 IA utilizada: Claude (Anthropic).
 
-Onde foi usada no codigo:
-  - funcao SJF()                 - logica do SJF preemptivo e nao preemptivo
-  - funcao PRIORIDADE()          - logica do Prioridade preemptivo e nao preemptivo
-  - funcao Round_Robin()         - logica do Round-Robin com quantum
-  - funcao soma_restante()       - auxiliar, criterio de termino da simulacao
-  - funcao contabiliza_espera()  - auxiliar, contagem do tempo de espera
-  - funcao menor_tempo_restante()- auxiliar, criterio de escolha do SJF
-  - funcao maior_prioridade()    - auxiliar, criterio de escolha do Prioridade
-  - funcao proximo_processo()    - auxiliar, fila circular do Round-Robin
-  - constante QUANTUM
+No codigo entregue nesta versao (tag v1.0) NAO ha nenhum trecho gerado por IA.
+O FCFS, assim como main, popular_processos, imprime_processos e imprime_stats,
+e' o codigo-base fornecido pelo professor, mantido sem alteracoes. As funcoes
+SJF(), PRIORIDADE() e Round_Robin() permanecem como os esqueletos do
+codigo-base. Por isso nao ha comentarios de marcacao de IA no base.py.
 
-Todos esses trechos estao marcados no codigo com o comentario "[IA]".
+Onde a IA foi usada: fora do codigo do programa - na organizacao do
+repositorio e na redacao deste arquivo e do README.md.
 
-Para que fim: escrever a logica de decisao de escalonamento de cada algoritmo,
-seguindo o modelo do FCFS ja' fornecido no codigo-base da disciplina.
+Observacao de transparencia: o historico do repositorio contem um commit
+anterior (ddf3f97) com implementacoes de SJF, Prioridade e Round-Robin
+escritas com auxilio de IA. Esse codigo NAO faz parte desta entrega e foi
+retirado da versao marcada com a tag v1.0; os algoritmos serao implementados
+e defendidos nas entregas 2, 3 e 4.
 
-O restante do arquivo (main, popular_processos, imprime_processos,
-imprime_stats e FCFS) e' o codigo-base fornecido pelo professor, mantido sem
-alteracoes.
-
-Todo o codigo foi revisado e compreendido pelo aluno, que tem dominio do seu
-funcionamento.
+Todo o codigo entregue foi estudado e compreendido pelo aluno, que tem
+dominio do seu funcionamento e e' capaz de explicar cada linha.

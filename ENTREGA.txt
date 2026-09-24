@@ -4,8 +4,9 @@ Prof. Jean Carlo Hamerski
 
 Aluno: Paulo (Paulosvv)
 Repositorio: https://github.com/Paulosvv/trab-so1
-Tag da versao entregue: v1.0
-Algoritmo desta entrega: FCFS (Entrega 1, peso 1/6)
+Tag da versao entregue: v2.0
+Algoritmos desta versao: FCFS (Entrega 1) + SJF preemptivo e nao preemptivo
+                         (Entrega 2)
 Linguagem: Python 3
 
 
@@ -31,9 +32,9 @@ tempo de execucao, tempo de chegada e prioridade.
 
 Em seguida e' exibido o menu:
 
-    1 = FCFS                        <- implementado nesta entrega
-    2 = SJF Preemptivo              (entrega 2)
-    3 = SJF Nao Preemptivo          (entrega 2)
+    1 = FCFS                        (entrega 1)
+    2 = SJF Preemptivo              (entrega 2)  <- nesta versao
+    3 = SJF Nao Preemptivo          (entrega 2)  <- nesta versao
     4 = Prioridade Preemptivo       (entrega 3)
     5 = Prioridade Nao Preemptivo   (entrega 3)
     6 = Round-Robin                 (entrega 4)
@@ -41,89 +42,100 @@ Em seguida e' exibido o menu:
     8 = Popula a lista de processos novamente
     9 = Sair
 
-As opcoes 2 a 6 existem no menu porque fazem parte do codigo-base, mas suas
-funcoes ainda sao os esqueletos originais: serao implementadas nas entregas
-seguintes.
+As opcoes 4 a 6 existem no menu porque fazem parte do codigo-base, mas suas
+funcoes ainda sao os esqueletos originais.
 
-A opcao 8 reatribui a lista de processos sem precisar reiniciar o programa,
-e a mesma lista pode ser reutilizada por todos os algoritmos - cada funcao
-copia as listas com list() antes de simular, sem destruir a entrada. E' o que
-permitira comparar o tempo medio de espera entre as politicas nas proximas
-entregas.
+Cada funcao copia as listas com list() antes de simular, sem destruir a
+entrada. Assim a mesma lista pode ser rodada no FCFS, no SJF nao preemptivo e
+no SJF preemptivo, comparando o tempo medio de espera de cada politica.
 
 
 2. O QUE O PROGRAMA IMPRIME
 ---------------------------
-Para cada execucao do FCFS:
+Para cada execucao:
 
   - o historico de execucao: uma linha por instante de tempo, no formato
     tempo[i]: processo[p] restante=r
+    (ou "tempo[i]: CPU ociosa" no SJF, se nenhum processo chegou ainda);
   - o tempo de espera de cada processo;
   - o tempo medio de espera (soma das esperas dividida por n_processos).
 
-Exemplo, com tempos de execucao 3, 2 e 4:
 
-    tempo[1]: processo[0] restante=3
-    tempo[2]: processo[0] restante=2
-    tempo[3]: processo[0] restante=1
-    tempo[4]: processo[1] restante=2
-    tempo[5]: processo[1] restante=1
-    tempo[6]: processo[2] restante=4
-    tempo[7]: processo[2] restante=3
-    tempo[8]: processo[2] restante=2
-    tempo[9]: processo[2] restante=1
-    Processo[0]: tempo_espera=0
-    Processo[1]: tempo_espera=3
-    Processo[2]: tempo_espera=5
-    Tempo medio de espera: 2.6666666666666665
+3. EXEMPLO COMPARATIVO (modo manual)
+------------------------------------
+    Processo   tempo_execucao   tempo_chegada
+       0             8                1
+       1             4                2
+       2             2                3
 
-Como o FCFS atende na ordem de chegada da lista, a espera de cada processo e'
-a soma dos tempos de execucao dos processos anteriores: 0, 3 e 3+2=5.
+FCFS (opcao 1) - ordem da lista, ignora a chegada:
+    P0 em 1..8, P1 em 9..12, P2 em 13..14
+    esperas: 0, 8, 12          media = 6.67
+
+SJF nao preemptivo (opcao 3):
+    Em t=1 so P0 chegou, entao ele roda ate o fim (1..8).
+    Em t=9 estao prontos P1 (4) e P2 (2): vai o mais curto, P2 (9..10).
+    Depois P1 (11..14).
+    esperas: 0, 9, 6           media = 5.0
+
+SJF preemptivo (opcao 2):
+    t=1  P0 roda (restante 8)
+    t=2  chega P1 (4 < 7): P1 toma a CPU
+    t=3  chega P2 (2 < 3): P2 toma a CPU, roda em 3..4
+    t=5  P1 volta (5..7), depois P0 termina (8..14)
+    esperas: 6, 2, 0           media = 2.67
+
+O preemptivo tem a menor media: e' o que se espera do SJF, que e' otimo para
+o tempo medio de espera.
 
 
-3. CONFIGURACAO
+4. CONFIGURACAO
 ---------------
 No topo do arquivo base.py:
 
     n_processos = 3              quantidade de processos da lista
     MAXIMO_TEMPO_EXECUCAO        limite do laco de simulacao
 
-Para executar com outra quantidade de processos, altere n_processos e rode
-o programa novamente.
 
-
-4. CONVENCOES ADOTADAS
+5. CONVENCOES ADOTADAS
 ----------------------
   - Os processos sao representados por listas paralelas indexadas pelo numero
     do processo: tempo_execucao, tempo_chegada, prioridade, tempo_restante e
     tempo_espera.
-  - O FCFS nao utiliza o tempo de chegada, conforme o enunciado do trabalho;
-    o atributo e' lido e guardado para uso do SJF e do Prioridade.
-  - A decisao de escalonamento do FCFS esta na funcao FCFS(), no trecho em que
-    o processo atual chega ao ultimo instante (tempo_restante == 1) e a CPU
-    passa para processo_em_execucao + 1, sem preempcao.
+  - FCFS: nao usa o tempo de chegada (conforme o enunciado). A decisao fica no
+    trecho em que o processo chega ao ultimo instante (tempo_restante == 1) e
+    a CPU passa para processo_em_execucao + 1, sem preempcao.
+  - SJF: um processo so pode ser escolhido a partir do instante em que chega
+    (tempo_chegada <= i). Entre os prontos, vai o de menor tempo restante; em
+    caso de empate, o que chegou primeiro e, persistindo, o de menor indice.
+  - SJF nao preemptivo: a escolha so e' refeita quando a CPU fica livre.
+  - SJF preemptivo (SRTF): a escolha e' refeita a cada instante.
+  - Espera no SJF: a cada instante, soma-se 1 para cada processo que ja
+    chegou, ainda nao terminou e nao esta na CPU (funcao contabiliza_espera).
+  - Se nenhum processo chegou ainda, o instante e' impresso como CPU ociosa.
 
 
-5. DECLARACAO DE USO DE INTELIGENCIA ARTIFICIAL GENERATIVA
+6. DECLARACAO DE USO DE INTELIGENCIA ARTIFICIAL GENERATIVA
 ----------------------------------------------------------
 Conforme a secao 6 do enunciado:
 
 IA utilizada: Claude (Anthropic).
 
-No codigo entregue nesta versao (tag v1.0) NAO ha nenhum trecho gerado por IA.
-O FCFS, assim como main, popular_processos, imprime_processos e imprime_stats,
-e' o codigo-base fornecido pelo professor, mantido sem alteracoes. As funcoes
-SJF(), PRIORIDADE() e Round_Robin() permanecem como os esqueletos do
-codigo-base. Por isso nao ha comentarios de marcacao de IA no base.py.
+Onde foi usada no codigo:
+  - na funcao SJF() e nas funcoes auxiliares soma_restante(),
+    contabiliza_espera() e menor_tempo_restante(), marcadas com "[IA]";
+  - nos comentarios explicativos de cada bloco do base.py.
 
-Onde a IA foi usada: fora do codigo do programa - na organizacao do
-repositorio e na redacao deste arquivo e do README.md.
+Para que fim: escrever a logica de escolha do processo a cada instante,
+seguindo o mesmo modelo de laco do FCFS do codigo-base, e documentar o
+funcionamento de cada bloco.
 
-Observacao de transparencia: o historico do repositorio contem um commit
-anterior (ddf3f97) com implementacoes de SJF, Prioridade e Round-Robin
-escritas com auxilio de IA. Esse codigo NAO faz parte desta entrega e foi
-retirado da versao marcada com a tag v1.0; os algoritmos serao implementados
-e defendidos nas entregas 2, 3 e 4.
+O FCFS, main, popular_processos, imprime_processos e imprime_stats sao o
+codigo-base fornecido pelo professor; receberam apenas comentarios, sem
+alteracao de logica. PRIORIDADE() e Round_Robin() seguem como esqueletos.
+
+Fora do codigo, a IA tambem foi usada na organizacao do repositorio e na
+redacao deste arquivo e do README.md.
 
 Todo o codigo entregue foi estudado e compreendido pelo aluno, que tem
 dominio do seu funcionamento e e' capaz de explicar cada linha.

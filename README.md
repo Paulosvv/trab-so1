@@ -11,11 +11,11 @@ Aluno: Paulo (Paulosvv)
 | # | Algoritmo | Tag | Situação |
 |---|---|---|---|
 | 1 | FCFS | `v1.0` | entregue |
-| 2 | SJF preemptivo e não preemptivo | `v2.0` | a implementar |
+| 2 | SJF preemptivo e não preemptivo | `v2.0` | entregue |
 | 3 | Prioridade preemptivo e não preemptivo | `v3.0` | a implementar |
 | 4 | Round-Robin e integração final | `v4.0` | a implementar |
 
-As opções 2 a 6 do menu já existem porque fazem parte do código-base, mas suas
+As opções 4 a 6 do menu já existem porque fazem parte do código-base, mas suas
 funções seguem como os esqueletos originais, a serem preenchidos nas próximas
 entregas.
 
@@ -78,8 +78,30 @@ A espera é registrada no instante em que o processo começa a executar
 dele. Por isso, no FCFS, a espera de cada processo é a soma dos tempos de
 execução dos processos anteriores.
 
+### Onde fica a decisão de escalonamento do SJF
+
+Na função `SJF()`, dentro do laço, a CPU é (re)atribuída pela função
+`menor_tempo_restante()`: entre os processos que já chegaram
+(`tempo_chegada <= i`) e ainda não terminaram, vence o de menor tempo restante
+(empate: quem chegou primeiro). O parâmetro `preemptivo` decide **quando** essa
+escolha é refeita:
+
+- **Não preemptivo** (opção 3): só quando a CPU fica livre — quem começou roda
+  até o fim.
+- **Preemptivo / SRTF** (opção 2): a cada instante — um processo mais curto que
+  chega toma a CPU do atual.
+
+A espera é somada instante a instante por `contabiliza_espera()`: cada processo
+que já chegou, não terminou e não está na CPU ganha 1 de espera. Se ninguém
+chegou ainda, o instante aparece como `CPU ociosa`.
+
+Exemplo (execução 8, 4, 2; chegada 1, 2, 3) — tempo médio de espera:
+FCFS 6,67 · SJF não preemptivo 5,0 · SJF preemptivo 2,67. Passo a passo em
+[ENTREGA.txt](ENTREGA.txt).
+
 ## Uso de Inteligência Artificial Generativa
 
-Nesta versão não há trecho de código gerado por IA — o FCFS é o código-base da
-disciplina. A declaração completa, exigida pela seção 6 do enunciado, está em
-[ENTREGA.txt](ENTREGA.txt).
+O FCFS é o código-base da disciplina (recebeu apenas comentários). A função
+`SJF()` e suas auxiliares, marcadas com `[IA]`, e os comentários dos blocos
+foram escritos com auxílio do Claude (Anthropic). A declaração completa,
+exigida pela seção 6 do enunciado, está em [ENTREGA.txt](ENTREGA.txt).

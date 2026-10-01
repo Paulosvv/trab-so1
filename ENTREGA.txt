@@ -4,9 +4,10 @@ Prof. Jean Carlo Hamerski
 
 Aluno: Paulo (Paulosvv)
 Repositorio: https://github.com/Paulosvv/trab-so1
-Tag da versao entregue: v2.0
-Algoritmos desta versao: FCFS (Entrega 1) + SJF preemptivo e nao preemptivo
-                         (Entrega 2)
+Tag da versao entregue: v3.0
+Algoritmos desta versao: FCFS (Entrega 1), SJF preemptivo e nao preemptivo
+                         (Entrega 2) e Prioridade preemptivo e nao
+                         preemptivo (Entrega 3)
 Linguagem: Python 3
 
 
@@ -33,21 +34,21 @@ tempo de execucao, tempo de chegada e prioridade.
 Em seguida e' exibido o menu:
 
     1 = FCFS                        (entrega 1)
-    2 = SJF Preemptivo              (entrega 2)  <- nesta versao
-    3 = SJF Nao Preemptivo          (entrega 2)  <- nesta versao
-    4 = Prioridade Preemptivo       (entrega 3)
-    5 = Prioridade Nao Preemptivo   (entrega 3)
+    2 = SJF Preemptivo              (entrega 2)
+    3 = SJF Nao Preemptivo          (entrega 2)
+    4 = Prioridade Preemptivo       (entrega 3)  <- nesta versao
+    5 = Prioridade Nao Preemptivo   (entrega 3)  <- nesta versao
     6 = Round-Robin                 (entrega 4)
     7 = Imprime a lista de processos
     8 = Popula a lista de processos novamente
     9 = Sair
 
-As opcoes 4 a 6 existem no menu porque fazem parte do codigo-base, mas suas
-funcoes ainda sao os esqueletos originais.
+A opcao 6 existe no menu porque faz parte do codigo-base, mas sua funcao
+ainda e' o esqueleto original (entrega 4).
 
 Cada funcao copia as listas com list() antes de simular, sem destruir a
-entrada. Assim a mesma lista pode ser rodada no FCFS, no SJF nao preemptivo e
-no SJF preemptivo, comparando o tempo medio de espera de cada politica.
+entrada. Assim a mesma lista pode ser rodada no FCFS, no SJF e na Prioridade,
+comparando o tempo medio de espera de cada politica.
 
 
 2. O QUE O PROGRAMA IMPRIME
@@ -56,12 +57,15 @@ Para cada execucao:
 
   - o historico de execucao: uma linha por instante de tempo, no formato
     tempo[i]: processo[p] restante=r
-    (ou "tempo[i]: CPU ociosa" no SJF, se nenhum processo chegou ainda);
+    (na Prioridade a linha mostra tambem " prioridade=x", e no SJF e na
+    Prioridade aparece "tempo[i]: CPU ociosa" se nenhum processo chegou);
   - o tempo de espera de cada processo;
   - o tempo medio de espera (soma das esperas dividida por n_processos).
 
 
-3. EXEMPLO COMPARATIVO (modo manual)
+3. EXEMPLOS COMPARATIVOS (modo manual)
+
+3.1 SJF
 ------------------------------------
     Processo   tempo_execucao   tempo_chegada
        0             8                1
@@ -88,6 +92,25 @@ SJF preemptivo (opcao 2):
 O preemptivo tem a menor media: e' o que se espera do SJF, que e' otimo para
 o tempo medio de espera.
 
+3.2 PRIORIDADE (menor numero = prioridade mais alta)
+    Processo   tempo_execucao   tempo_chegada   prioridade
+       0             5                1              3
+       1             3                2              2
+       2             2                3              1
+
+Prioridade nao preemptivo (opcao 5):
+    Em t=1 so P0 chegou, entao ele roda ate o fim (1..5).
+    Em t=6 estao prontos P1 (prio 2) e P2 (prio 1): vai P2 (6..7).
+    Depois P1 (8..10).
+    esperas: 0, 6, 3           media = 3.0
+
+Prioridade preemptivo (opcao 4):
+    t=1  P0 roda (prio 3)
+    t=2  chega P1 (prio 2, mais alta): P1 toma a CPU
+    t=3  chega P2 (prio 1, mais alta): P2 toma a CPU, roda em 3..4
+    t=5  P1 volta (5..6), depois P0 termina (7..10)
+    esperas: 5, 2, 0           media = 2.33
+
 
 4. CONFIGURACAO
 ---------------
@@ -112,6 +135,14 @@ No topo do arquivo base.py:
   - SJF preemptivo (SRTF): a escolha e' refeita a cada instante.
   - Espera no SJF: a cada instante, soma-se 1 para cada processo que ja
     chegou, ainda nao terminou e nao esta na CPU (funcao contabiliza_espera).
+  - Prioridade: mesma estrutura do SJF, trocando o criterio de escolha pela
+    funcao maior_prioridade(). Convencao: MENOR numero = prioridade MAIS
+    ALTA (1 e' a mais alta; o sorteio gera valores de 1 a 15). Empate: quem
+    chegou primeiro e, persistindo, o de menor indice.
+  - Prioridade nao preemptivo: a escolha so e' refeita quando a CPU fica livre.
+  - Prioridade preemptivo: a escolha e' refeita a cada instante; um processo
+    mais prioritario que chega toma a CPU.
+  - A espera na Prioridade e' contada como no SJF (contabiliza_espera).
   - Se nenhum processo chegou ainda, o instante e' impresso como CPU ociosa.
 
 
@@ -122,8 +153,9 @@ Conforme a secao 6 do enunciado:
 IA utilizada: Claude (Anthropic).
 
 Onde foi usada no codigo:
-  - na funcao SJF() e nas funcoes auxiliares soma_restante(),
-    contabiliza_espera() e menor_tempo_restante(), marcadas com "[IA]";
+  - nas funcoes SJF() e PRIORIDADE() e nas funcoes auxiliares
+    soma_restante(), contabiliza_espera(), menor_tempo_restante() e
+    maior_prioridade(), marcadas com "[IA]";
   - nos comentarios explicativos de cada bloco do base.py.
 
 Para que fim: escrever a logica de escolha do processo a cada instante,
@@ -132,7 +164,7 @@ funcionamento de cada bloco.
 
 O FCFS, main, popular_processos, imprime_processos e imprime_stats sao o
 codigo-base fornecido pelo professor; receberam apenas comentarios, sem
-alteracao de logica. PRIORIDADE() e Round_Robin() seguem como esqueletos.
+alteracao de logica. Round_Robin() segue como esqueleto.
 
 Fora do codigo, a IA tambem foi usada na organizacao do repositorio e na
 redacao deste arquivo e do README.md.

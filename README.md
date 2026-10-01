@@ -12,12 +12,11 @@ Aluno: Paulo (Paulosvv)
 |---|---|---|---|
 | 1 | FCFS | `v1.0` | entregue |
 | 2 | SJF preemptivo e não preemptivo | `v2.0` | entregue |
-| 3 | Prioridade preemptivo e não preemptivo | `v3.0` | a implementar |
+| 3 | Prioridade preemptivo e não preemptivo | `v3.0` | entregue |
 | 4 | Round-Robin e integração final | `v4.0` | a implementar |
 
-As opções 4 a 6 do menu já existem porque fazem parte do código-base, mas suas
-funções seguem como os esqueletos originais, a serem preenchidos nas próximas
-entregas.
+A opção 6 do menu já existe porque faz parte do código-base, mas sua função
+segue como o esqueleto original, a ser preenchido na entrega 4.
 
 ## Como executar
 
@@ -99,9 +98,25 @@ Exemplo (execução 8, 4, 2; chegada 1, 2, 3) — tempo médio de espera:
 FCFS 6,67 · SJF não preemptivo 5,0 · SJF preemptivo 2,67. Passo a passo em
 [ENTREGA.txt](ENTREGA.txt).
 
+### Onde fica a decisão de escalonamento da Prioridade
+
+Na função `PRIORIDADE()`, que tem o mesmo laço do SJF: só muda o critério de
+escolha, feito por `maior_prioridade()`. Entre os processos que já chegaram e
+não terminaram, vence o de **menor número de prioridade** (1 é a mais alta;
+empate: quem chegou primeiro). O parâmetro `preemptivo` decide quando a escolha
+é refeita:
+
+- **Não preemptivo** (opção 5): só quando a CPU fica livre.
+- **Preemptivo** (opção 4): a cada instante — um processo mais prioritário que
+  chega toma a CPU do atual.
+
+Exemplo (execução 5, 3, 2; chegada 1, 2, 3; prioridade 3, 2, 1) — tempo médio
+de espera: não preemptivo 3,0 · preemptivo 2,33. Passo a passo em
+[ENTREGA.txt](ENTREGA.txt).
+
 ## Uso de Inteligência Artificial Generativa
 
-O FCFS é o código-base da disciplina (recebeu apenas comentários). A função
-`SJF()` e suas auxiliares, marcadas com `[IA]`, e os comentários dos blocos
+O FCFS é o código-base da disciplina (recebeu apenas comentários). As funções
+`SJF()` e `PRIORIDADE()` e suas auxiliares, marcadas com `[IA]`, e os comentários dos blocos
 foram escritos com auxílio do Claude (Anthropic). A declaração completa,
 exigida pela seção 6 do enunciado, está em [ENTREGA.txt](ENTREGA.txt).

@@ -5,18 +5,20 @@
 #
 # Entrega 1 (tag v1.0): FCFS
 # Entrega 2 (tag v2.0): SJF preemptivo e nao preemptivo
+# Entrega 3 (tag v3.0): Prioridade preemptivo e nao preemptivo
 # Aluno: Paulo (Paulosvv)
 #
 # DECLARACAO DE USO DE IA GENERATIVA (secao 6 do enunciado):
 # IA utilizada: Claude (Anthropic).
-# Onde: na funcao SJF() e nas funcoes auxiliares soma_restante(),
-#       contabiliza_espera() e menor_tempo_restante(), marcadas com "[IA]",
-#       e nos comentarios explicativos dos blocos do arquivo.
+# Onde: nas funcoes SJF() e PRIORIDADE() e nas funcoes auxiliares
+#       soma_restante(), contabiliza_espera(), menor_tempo_restante() e
+#       maior_prioridade(), marcadas com "[IA]", e nos comentarios
+#       explicativos dos blocos do arquivo.
 # Para que fim: escrever a logica de escolha do processo a cada instante
 #       de tempo, seguindo o mesmo modelo de laco do FCFS do codigo-base.
 # O FCFS, main, popular_processos, imprime_processos e imprime_stats sao o
 # codigo-base da disciplina (apenas receberam comentarios).
-# PRIORIDADE() e Round_Robin() seguem como esqueletos (entregas 3 e 4).
+# Round_Robin() segue como esqueleto (entrega 4).
 # O detalhamento esta em ENTREGA.txt.
 # ==============================================================
 
@@ -221,14 +223,60 @@ def SJF(preemptivo, execucao, espera, restante, chegada):
 
 
 def PRIORIDADE(preemptivo, execucao, espera, restante, chegada, prioridade):
+    # --- Copia das listas (mesmo motivo do FCFS) ---
     tempo_execucao = list(execucao)
     tempo_espera = list(espera)
     tempo_restante = list(restante)
-    tempo_chegada = list(chegada)
+    tempo_chegada = list(chegada)      # a Prioridade usa o tempo de chegada
     prioridade_temp = list(prioridade)
 
-    # implementar codigo do Prioridade preemptivo e nao preemptivo (entrega 3)
-    #
+    # [IA] Prioridade preemptivo e nao preemptivo.
+    # Regra: entre os processos que JA CHEGARAM e ainda nao terminaram,
+    # a CPU vai para o de prioridade MAIS ALTA.
+    # Convencao: MENOR numero = prioridade MAIS ALTA (1 e' a mais alta).
+    #  - Nao preemptivo: a escolha so e' feita quando a CPU fica livre;
+    #    quem comecou roda ate o fim.
+    #  - Preemptivo: a escolha e' refeita a cada instante; se chegar um
+    #    processo mais prioritario, ele toma a CPU do atual.
+    # O laco e' o mesmo do SJF: muda apenas o criterio de escolha.
+    processo_em_execucao = -1  # -1 significa CPU ociosa (ninguem escolhido)
+
+    # --- Laco de simulacao: cada volta e' um instante de tempo i ---
+    for i in range(1, MAXIMO_TEMPO_EXECUCAO):
+
+        # --- Condicao de parada ---
+        # Se a soma do que falta executar e' zero, todos terminaram.
+        if soma_restante(tempo_restante) == 0:
+            break
+
+        # --- Decisao de escalonamento ---
+        # Escolhe um (novo) processo quando:
+        #  - a CPU esta ociosa (-1);
+        #  - o processo atual terminou (restante == 0);
+        #  - o algoritmo e' preemptivo (reavalia em todo instante).
+        # No nao preemptivo, fora esses casos, o processo atual continua.
+        if (processo_em_execucao == -1 or preemptivo or
+                tempo_restante[processo_em_execucao] == 0):
+            processo_em_execucao = maior_prioridade(prioridade_temp, tempo_restante, tempo_chegada, i)
+
+        # --- CPU ociosa ---
+        # Nenhum processo chegou ainda neste instante: pula para o proximo.
+        if processo_em_execucao == -1:
+            print("tempo[" + str(i) + "]: CPU ociosa")
+            continue
+
+        # --- Historico: qual processo ocupa a CPU neste instante ---
+        print("tempo[" + str(i) + "]: processo[" + str(processo_em_execucao) + "] restante=" +
+              str(tempo_restante[processo_em_execucao]) +
+              " prioridade=" + str(prioridade_temp[processo_em_execucao]))
+
+        # --- Registro da espera ---
+        # Todo processo que ja chegou, nao terminou e nao esta na CPU
+        # esperou 1 unidade de tempo neste instante.
+        contabiliza_espera(tempo_espera, tempo_restante, tempo_chegada, processo_em_execucao, i)
+
+        # --- Execucao: o processo escolhido consome 1 unidade de tempo ---
+        tempo_restante[processo_em_execucao] = tempo_restante[processo_em_execucao] - 1
 
     imprime_stats(tempo_espera)
 
@@ -275,6 +323,25 @@ def menor_tempo_restante(tempo_restante, tempo_chegada, instante):
             if (escolhido == -1 or
                     tempo_restante[j] < tempo_restante[escolhido] or
                     (tempo_restante[j] == tempo_restante[escolhido] and
+                     tempo_chegada[j] < tempo_chegada[escolhido])):
+                escolhido = j
+    return escolhido
+
+
+# ---------- funcao auxiliar da Prioridade [IA] ----------
+# (soma_restante e contabiliza_espera, acima, sao reaproveitadas)
+
+def maior_prioridade(prioridade, tempo_restante, tempo_chegada, instante):
+    # Percorre a fila de prontos e devolve o indice do processo com a
+    # prioridade MAIS ALTA (MENOR numero). Devolve -1 se nenhum chegou ainda.
+    # Desempate: quem chegou primeiro; persistindo, o de menor indice.
+    escolhido = -1
+    for j in range(n_processos):
+        # So concorre quem ja chegou e ainda tem o que executar.
+        if tempo_chegada[j] <= instante and tempo_restante[j] > 0:
+            if (escolhido == -1 or
+                    prioridade[j] < prioridade[escolhido] or
+                    (prioridade[j] == prioridade[escolhido] and
                      tempo_chegada[j] < tempo_chegada[escolhido])):
                 escolhido = j
     return escolhido

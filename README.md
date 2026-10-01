@@ -113,10 +113,3 @@ empate: quem chegou primeiro). O parâmetro `preemptivo` decide quando a escolha
 Exemplo (execução 5, 3, 2; chegada 1, 2, 3; prioridade 3, 2, 1) — tempo médio
 de espera: não preemptivo 3,0 · preemptivo 2,33. Passo a passo em
 [ENTREGA.txt](ENTREGA.txt).
-
-## Uso de Inteligência Artificial Generativa
-
-O FCFS é o código-base da disciplina (recebeu apenas comentários). As funções
-`SJF()` e `PRIORIDADE()` e suas auxiliares, marcadas com `[IA]`, e os comentários dos blocos
-foram escritos com auxílio do Claude (Anthropic). A declaração completa,
-exigida pela seção 6 do enunciado, está em [ENTREGA.txt](ENTREGA.txt).

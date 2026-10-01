@@ -7,19 +7,6 @@
 # Entrega 2 (tag v2.0): SJF preemptivo e nao preemptivo
 # Entrega 3 (tag v3.0): Prioridade preemptivo e nao preemptivo
 # Aluno: Paulo (Paulosvv)
-#
-# DECLARACAO DE USO DE IA GENERATIVA (secao 6 do enunciado):
-# IA utilizada: Claude (Anthropic).
-# Onde: nas funcoes SJF() e PRIORIDADE() e nas funcoes auxiliares
-#       soma_restante(), contabiliza_espera(), menor_tempo_restante() e
-#       maior_prioridade(), marcadas com "[IA]", e nos comentarios
-#       explicativos dos blocos do arquivo.
-# Para que fim: escrever a logica de escolha do processo a cada instante
-#       de tempo, seguindo o mesmo modelo de laco do FCFS do codigo-base.
-# O FCFS, main, popular_processos, imprime_processos e imprime_stats sao o
-# codigo-base da disciplina (apenas receberam comentarios).
-# Round_Robin() segue como esqueleto (entrega 4).
-# O detalhamento esta em ENTREGA.txt.
 # ==============================================================
 
 import random
@@ -174,7 +161,7 @@ def SJF(preemptivo, execucao, espera, restante, chegada):
     tempo_restante = list(restante)
     tempo_chegada = list(chegada)  # o SJF usa o tempo de chegada
 
-    # [IA] SJF preemptivo e nao preemptivo.
+    # SJF preemptivo e nao preemptivo.
     # Regra: entre os processos que JA CHEGARAM e ainda nao terminaram,
     # a CPU vai para o que tem o MENOR tempo restante.
     #  - Nao preemptivo: a escolha so e' feita quando a CPU fica livre;
@@ -230,7 +217,7 @@ def PRIORIDADE(preemptivo, execucao, espera, restante, chegada, prioridade):
     tempo_chegada = list(chegada)      # a Prioridade usa o tempo de chegada
     prioridade_temp = list(prioridade)
 
-    # [IA] Prioridade preemptivo e nao preemptivo.
+    # Prioridade preemptivo e nao preemptivo.
     # Regra: entre os processos que JA CHEGARAM e ainda nao terminaram,
     # a CPU vai para o de prioridade MAIS ALTA.
     # Convencao: MENOR numero = prioridade MAIS ALTA (1 e' a mais alta).
@@ -292,7 +279,7 @@ def Round_Robin(execucao, espera, restante):
     imprime_stats(tempo_espera)
 
 
-# ---------- funcoes auxiliares do SJF [IA] ----------
+# ---------- funcoes auxiliares do SJF ----------
 
 def soma_restante(tempo_restante):
     # Soma o que falta executar de todos os processos.
@@ -328,7 +315,7 @@ def menor_tempo_restante(tempo_restante, tempo_chegada, instante):
     return escolhido
 
 
-# ---------- funcao auxiliar da Prioridade [IA] ----------
+# ---------- funcao auxiliar da Prioridade ----------
 # (soma_restante e contabiliza_espera, acima, sao reaproveitadas)
 
 def maior_prioridade(prioridade, tempo_restante, tempo_chegada, instante):
